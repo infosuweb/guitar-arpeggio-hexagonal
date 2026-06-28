@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Guitar Arpeggio Fretboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: #111;
+      background-image: radial-gradient(circle, #1d1d1d 1px, transparent 1px);
+      background-size: 6px 6px;
+      color: #eee;
+      font-family: 'Oswald', 'Arial Black', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 48px 20px 64px;
+    }
+
+    h1 {
+      font-family: 'Oswald', sans-serif;
+      font-size: 2.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 6px;
+      color: #f0c040;
+      text-shadow:
+        0 0 40px rgba(240,192,64,0.35),
+        0 2px 6px rgba(0,0,0,0.9),
+        0 1px 0 #906010;
+      margin-bottom: 36px;
+    }
+
+    /* ── Controls panel (brushed metal) ── */
+    .controls-panel {
+      width: 100%;
+      max-width: 960px;
+      background:
+        repeating-linear-gradient(
+          90deg,
+          transparent, transparent 4px,
+          rgba(255,255,255,0.022) 4px,
+          rgba(255,255,255,0.022) 8px
+        ),
+        linear-gradient(180deg,
+          #d0d0d0 0%, #a8a8a8 25%,
+          #c4c4c4 50%, #949494 75%,
+          #c8c8c8 100%
+        );
+      border-top: 2px solid #e2e2e2;
+      border-bottom: 2px solid #3a3a3a;
+      box-shadow:
+        0 -1px 0 rgba(255,255,255,0.15),
+        0 6px 20px rgba(0,0,0,0.75),
+        inset 0 1px 0 rgba(255,255,255,0.35);
+      padding: 20px 32px 24px;
+      margin-bottom: 36px;
+    }
+
+    #arpeggio-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .arpeggio-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .color-swatch {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.5), inset 0 -1px 1px rgba(0,0,0,0.3);
+    }
+
+    .row-label {
+      font-family: 'Oswald', sans-serif;
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: #2a2a2a;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    select {
+      background: #1a1a1a;
+      color: #f0c040;
+      border: 1px solid #555;
+      border-radius: 3px;
+      padding: 7px 14px;
+      font-family: 'Oswald', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      cursor: pointer;
+      outline: none;
+      box-shadow: inset 0 2px 5px rgba(0,0,0,0.65), 0 1px 0 rgba(255,255,255,0.18);
+      text-transform: uppercase;
+    }
+
+    select:focus { border-color: #f0c040; }
+
+    .remove-btn {
+      background: transparent;
+      color: #666;
+      border: 1px solid #888;
+      border-radius: 3px;
+      width: 28px;
+      height: 28px;
+      font-size: 1rem;
+      line-height: 1;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .remove-btn:hover { color: #c0392b; border-color: #c0392b; }
+
+    .add-btn {
+      background: #111;
+      color: #f0c040;
+      border: 1px solid rgba(240,192,64,0.4);
+      border-radius: 3px;
+      padding: 7px 20px;
+      font-family: 'Oswald', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      cursor: pointer;
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);
+      transition: border-color 0.15s;
+    }
+    .add-btn:hover { border-color: #f0c040; }
+
+    /* ── Fretboard cabinet ── */
+    .fretboard-outer {
+      width: 100%;
+      max-width: 960px;
+      background: linear-gradient(145deg, #6a6a6a 0%, #484848 40%, #585858 60%, #383838 100%);
+      border-radius: 6px;
+      padding: 22px;
+      position: relative;
+      box-shadow:
+        0 0 0 1px #222,
+        0 0 0 4px #888,
+        0 0 0 5px #2a2a2a,
+        0 16px 48px rgba(0,0,0,0.85),
+        inset 0 1px 0 rgba(255,255,255,0.12),
+        inset 0 -1px 0 rgba(0,0,0,0.4);
+    }
+
+    .screw {
+      position: absolute;
+      width: 14px; height: 14px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 33% 28%, #e8e8e8, #a8a8a8 50%, #505050 100%);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.8), inset 0 -1px 2px rgba(0,0,0,0.4);
+      z-index: 10;
+    }
+    .screw::after {
+      content: ''; position: absolute;
+      top: 50%; left: 20%; right: 20%; height: 2px;
+      background: rgba(0,0,0,0.55);
+      transform: translateY(-50%); border-radius: 1px;
+    }
+    .screw::before {
+      content: ''; position: absolute;
+      left: 50%; top: 20%; bottom: 20%; width: 2px;
+      background: rgba(0,0,0,0.55);
+      transform: translateX(-50%); border-radius: 1px;
+    }
+    .screw-tl { top: 9px;    left: 9px;  }
+    .screw-tr { top: 9px;    right: 9px; }
+    .screw-bl { bottom: 9px; left: 9px;  }
+    .screw-br { bottom: 9px; right: 9px; }
+
+    .fretboard-wrap {
+      overflow-x: auto;
+      width: 100%;
+      background: #080808;
+      border-radius: 3px;
+      box-shadow: inset 0 2px 10px rgba(0,0,0,0.9), inset 0 0 0 1px rgba(0,0,0,0.6);
+      padding: 6px;
+    }
+
+    svg { display: block; width: 100%; height: auto; }
+
+    /* ── Legend ── */
+    .legend {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 28px;
+      align-items: flex-start;
+      width: 100%;
+      max-width: 960px;
+    }
+
+    .legend-arpeggio {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'Oswald', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 400;
+      letter-spacing: 1.8px;
+      text-transform: uppercase;
+      color: #777;
+    }
+
+    .legend-color-dot {
+      width: 14px; height: 14px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.6);
+    }
+  </style>
+</head>
+<body>
+
+<h1>Guitar Arpeggio</h1>
+
+<div class="controls-panel">
+  <div id="arpeggio-list"></div>
+  <button class="add-btn" id="add-btn">+ Agregar arpegio</button>
+</div>
+
+<div class="fretboard-outer">
+  <div class="screw screw-tl"></div>
+  <div class="screw screw-tr"></div>
+  <div class="screw screw-bl"></div>
+  <div class="screw screw-br"></div>
+  <div class="fretboard-wrap">
+    <svg id="fretboard"></svg>
+  </div>
+</div>
+
+<div class="legend" id="legend"></div>
+
+<script>
+  // ── Music theory ──────────────────────────────────────────────────────────
+  const CHROMATIC = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+
+  const CHORD_INTERVALS = {
+    maj:     [0, 4, 7],
+    min:     [0, 3, 7],
+    maj7:    [0, 4, 7, 11],
+    min7:    [0, 3, 7, 10],
+    dom7:    [0, 4, 7, 10],
+    dim:     [0, 3, 6],
+    dim7:    [0, 3, 6, 9],
+    m7b5:    [0, 3, 6, 10],
+    maj9:    [0, 4, 7, 11, 2],
+    min9:    [0, 3, 7, 10, 2],
+    dom9:    [0, 4, 7, 10, 2],
+    dom7b9:  [0, 4, 7, 10, 1],
+    dom7s9:  [0, 4, 7, 10, 3],
+    dom7s11: [0, 4, 7, 10, 6],
+    // Modos griegos (7 notas)
+    ionian:     [0, 2, 4, 5, 7, 9, 11],
+    dorian:     [0, 2, 3, 5, 7, 9, 10],
+    phrygian:   [0, 1, 3, 5, 7, 8, 10],
+    lydian:     [0, 2, 4, 6, 7, 9, 11],
+    mixolydian: [0, 2, 4, 5, 7, 9, 10],
+    aeolian:    [0, 2, 3, 5, 7, 8, 10],
+    locrian:    [0, 1, 3, 5, 6, 8, 10],
+  };
+
+  const INTERVAL_NAMES = {
+    maj:     { 0:'T', 4:'3M', 7:'5J' },
+    min:     { 0:'T', 3:'3m', 7:'5J' },
+    maj7:    { 0:'T', 4:'3M', 7:'5J', 11:'7M' },
+    min7:    { 0:'T', 3:'3m', 7:'5J', 10:'7m' },
+    dom7:    { 0:'T', 4:'3M', 7:'5J', 10:'7m' },
+    dim:     { 0:'T', 3:'3m', 6:'5d' },
+    dim7:    { 0:'T', 3:'3m', 6:'5d', 9:'7d' },
+    m7b5:    { 0:'T', 3:'3m', 6:'5d', 10:'7m' },
+    maj9:    { 0:'T', 4:'3M', 7:'5J', 11:'7M', 2:'9' },
+    min9:    { 0:'T', 3:'3m', 7:'5J', 10:'7m', 2:'9' },
+    dom9:    { 0:'T', 4:'3M', 7:'5J', 10:'7m', 2:'9' },
+    dom7b9:  { 0:'T', 4:'3M', 7:'5J', 10:'7m', 1:'b9' },
+    dom7s9:  { 0:'T', 4:'3M', 7:'5J', 10:'7m', 3:'#9' },
+    dom7s11: { 0:'T', 4:'3M', 7:'5J', 10:'7m', 6:'#11' },
+    // Modos (notación de grados)
+    ionian:     { 0:'1', 2:'2', 4:'3', 5:'4', 7:'5', 9:'6', 11:'7' },
+    dorian:     { 0:'1', 2:'2', 3:'b3', 5:'4', 7:'5', 9:'6', 10:'b7' },
+    phrygian:   { 0:'1', 1:'b2', 3:'b3', 5:'4', 7:'5', 8:'b6', 10:'b7' },
+    lydian:     { 0:'1', 2:'2', 4:'3', 6:'#4', 7:'5', 9:'6', 11:'7' },
+    mixolydian: { 0:'1', 2:'2', 4:'3', 5:'4', 7:'5', 9:'6', 10:'b7' },
+    aeolian:    { 0:'1', 2:'2', 3:'b3', 5:'4', 7:'5', 8:'b6', 10:'b7' },
+    locrian:    { 0:'1', 1:'b2', 3:'b3', 5:'4', 6:'b5', 8:'b6', 10:'b7' },
+  };
+
+  // Nota característica de cada modo (la que lo distingue de los demás)
+  const MODE_CHARACTERISTIC = {
+    ionian:     ['7'],
+    dorian:     ['6'],
+    phrygian:   ['b2'],
+    lydian:     ['#4'],
+    mixolydian: ['b7'],
+    aeolian:    ['b6'],
+    locrian:    ['b2', 'b5'],
+  };
+
+  const INTERVAL_ORDER = [
+    'T','3m','3M','5d','5J','7d','7m','7M','b9','9','#9','#11',
+    '1','b2','2','b3','3','4','#4','b5','5','b6','6','b7','7',
+  ];
+
+  const INTERVAL_ES = {
+    'T':'Tónica','3m':'Tercera menor','3M':'Tercera mayor',
+    '5d':'Quinta disminuida','5J':'Quinta justa',
+    '7d':'Séptima disminuida','7m':'Séptima menor','7M':'Séptima mayor',
+    'b9':'Novena bemol','9':'Novena','#9':'Novena aumentada','#11':'Oncena aumentada',
+    '1':'Tónica','b2':'Segunda bemol','2':'Segunda',
+    'b3':'Tercera menor','3':'Tercera mayor',
+    '4':'Cuarta justa','#4':'Cuarta aumentada',
+    'b5':'Quinta disminuida','5':'Quinta justa',
+    'b6':'Sexta menor','6':'Sexta mayor',
+    'b7':'Séptima menor','7':'Séptima mayor',
+  };
+
+  const TYPE_LABELS = {
+    maj:'Major', min:'Minor', maj7:'Maj 7', min7:'Min 7',
+    dom7:'Dom 7', dim:'Dim', dim7:'Dim 7', m7b5:'m7b5 (ø)',
+    maj9:'Maj 9', min9:'Min 9',
+    dom9:'Dom 9', dom7b9:'Dom 7b9', dom7s9:'Dom 7#9', dom7s11:'Dom 7#11',
+    ionian:'Jónico', dorian:'Dórico', phrygian:'Frigio',
+    lydian:'Lidio', mixolydian:'Mixolidio', aeolian:'Eólico', locrian:'Locrio',
+  };
+
+  const NOTES = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+
+  const CHORD_TYPE_OPTIONS = [
+    { group: 'Arpegios', options: [
+      {value:'maj',label:'Major'},{value:'min',label:'Minor'},
+      {value:'maj7',label:'Maj 7'},{value:'min7',label:'Min 7'},
+      {value:'dom7',label:'Dom 7'},{value:'dim',label:'Dim'},
+      {value:'dim7',label:'Dim 7'},{value:'m7b5',label:'m7b5 (ø)'},
+      {value:'maj9',label:'Maj 9'},{value:'min9',label:'Min 9'},
+      {value:'dom9',label:'Dom 9'},{value:'dom7b9',label:'Dom 7b9'},
+      {value:'dom7s9',label:'Dom 7#9'},{value:'dom7s11',label:'Dom 7#11'},
+    ]},
+    { group: 'Modos', options: [
+      {value:'ionian',label:'Jónico (Mayor)'},
+      {value:'dorian',label:'Dórico'},
+      {value:'phrygian',label:'Frigio'},
+      {value:'lydian',label:'Lidio'},
+      {value:'mixolydian',label:'Mixolidio'},
+      {value:'aeolian',label:'Eólico (Menor)'},
+      {value:'locrian',label:'Locrio'},
+    ]},
+  ];
+
+  // Palette for arpegios — high contrast, works on dark bg
+  const PALETTE = [
+    '#ff3b30','#007aff','#34c759','#ff9500',
+    '#af52de','#ff2d55','#5ac8fa','#ffcc00',
+    '#ff6b6b','#4ecdc4','#a8e063','#f7971e',
+  ];
+
+  const NOTE_ALIASES = { Db:'C#', Eb:'D#', Gb:'F#', Ab:'G#', Bb:'A#' };
+
+  function noteToIndex(note) {
+    return CHROMATIC.indexOf(NOTE_ALIASES[note] ?? note);
+  }
+  function indexToNote(i) { return CHROMATIC[((i % 12) + 12) % 12]; }
+  function transpose(note, semitones) { return indexToNote(noteToIndex(note) + semitones); }
+
+  // Returns brightness 0-1 of a hex color
+  function luminance(hex) {
+    const r = parseInt(hex.slice(1,3),16);
+    const g = parseInt(hex.slice(3,5),16);
+    const b = parseInt(hex.slice(5,7),16);
+    return (0.299*r + 0.587*g + 0.114*b) / 255;
+  }
+
+  // ── Fretboard logic ───────────────────────────────────────────────────────
+  const OPEN_STRINGS = ['E','A','D','G','B','E']; // index 0 = 6th string (low E)
+
+  function getArpeggio(root, type, maxFret = 12) {
+    const intervalMap  = INTERVAL_NAMES[type];
+    const rootIdx      = noteToIndex(root);
+    const chordSet     = new Set(
+      CHORD_INTERVALS[type].map(i => ((rootIdx + i) % 12 + 12) % 12)
+    );
+    const positions = [];
+    for (let s = 0; s < 6; s++) {
+      for (let fret = 0; fret <= maxFret; fret++) {
+        const note    = transpose(OPEN_STRINGS[s], fret);
+        const noteIdx = noteToIndex(note);
+        if (chordSet.has(noteIdx)) {
+          const semitones = ((noteIdx - rootIdx) + 12) % 12;
+          positions.push({ string: 6 - s, fret, note, interval: intervalMap[semitones] ?? 'T' });
+        }
+      }
+    }
+    return positions;
+  }
+
+  // ── Arpeggio state ────────────────────────────────────────────────────────
+  let arpegios = [];
+  let nextId   = 0;
+
+  function addArpegio(root = 'C', type = 'maj') {
+    const color = PALETTE[arpegios.length % PALETTE.length];
+    arpegios.push({ id: nextId++, root, type, color });
+    renderControls();
+    renderAll();
+  }
+
+  function removeArpegio(id) {
+    if (arpegios.length <= 1) return;
+    arpegios = arpegios.filter(a => a.id !== id);
+    renderControls();
+    renderAll();
+  }
+
+  function updateArpegio(id, key, value) {
+    const a = arpegios.find(a => a.id === id);
+    if (a) { a[key] = value; renderAll(); }
+  }
+
+  // ── Controls rendering ────────────────────────────────────────────────────
+  function makeSelect(options, selected, cls) {
+    const sel = document.createElement('select');
+    sel.className = cls;
+    function addOption(parent, opt) {
+      const o = document.createElement('option');
+      const val = typeof opt === 'string' ? opt : opt.value;
+      const lbl = typeof opt === 'string' ? opt : opt.label;
+      o.value = val; o.textContent = lbl;
+      if (val === selected) o.selected = true;
+      parent.appendChild(o);
+    }
+    for (const item of options) {
+      if (item.group) {
+        const grp = document.createElement('optgroup');
+        grp.label = item.group;
+        for (const opt of item.options) addOption(grp, opt);
+        sel.appendChild(grp);
+      } else {
+        addOption(sel, item);
+      }
+    }
+    return sel;
+  }
+
+  function renderControls() {
+    const list = document.getElementById('arpeggio-list');
+    list.innerHTML = '';
+    const multi = arpegios.length > 1;
+
+    for (const a of arpegios) {
+      const row = document.createElement('div');
+      row.className = 'arpeggio-row';
+
+      const swatch = document.createElement('div');
+      swatch.className = 'color-swatch';
+      swatch.style.background = a.color;
+
+      const rootLabel = document.createElement('label');
+      rootLabel.className = 'row-label';
+      rootLabel.textContent = 'Raíz';
+      const rootSel = makeSelect(NOTES, a.root, 'root-sel');
+      rootSel.addEventListener('change', () => updateArpegio(a.id, 'root', rootSel.value));
+      rootLabel.appendChild(rootSel);
+
+      const typeLabel = document.createElement('label');
+      typeLabel.className = 'row-label';
+      typeLabel.textContent = 'Acorde';
+      const typeSel = makeSelect(CHORD_TYPE_OPTIONS, a.type, 'type-sel');
+      typeSel.addEventListener('change', () => updateArpegio(a.id, 'type', typeSel.value));
+      typeLabel.appendChild(typeSel);
+
+      row.append(swatch, rootLabel, typeLabel);
+
+      if (multi) {
+        const removeBtn = document.createElement('button');
+        removeBtn.className = 'remove-btn';
+        removeBtn.textContent = '×';
+        removeBtn.title = 'Quitar arpegio';
+        removeBtn.addEventListener('click', () => removeArpegio(a.id));
+        row.appendChild(removeBtn);
+      }
+
+      list.appendChild(row);
+    }
+  }
+
+  // ── Main render ───────────────────────────────────────────────────────────
+  function renderAll() {
+    renderLegend();
+    renderFretboard();
+  }
+
+  function renderLegend() {
+    const el = document.getElementById('legend');
+    el.innerHTML = '';
+    for (const a of arpegios) {
+      const positions = getArpeggio(a.root, a.type);
+      const present   = new Set(positions.map(p => p.interval));
+      const ordered   = INTERVAL_ORDER.filter(iv => present.has(iv));
+
+      const item = document.createElement('div');
+      item.className = 'legend-arpeggio';
+
+      const dot = document.createElement('div');
+      dot.className = 'legend-color-dot';
+      dot.style.background = a.color;
+
+      const txt = document.createElement('span');
+      txt.textContent = `${a.root} ${TYPE_LABELS[a.type]}  —  ${ordered.join(' · ')}`;
+
+      item.append(dot, txt);
+      el.appendChild(item);
+    }
+  }
+
+  // ── SVG Fretboard renderer ─────────────────────────────────────────────
+  const FRETS       = 12;
+  const STRINGS     = 6;
+  const STRING_LABELS = ['E','B','G','D','A','E']; // high E first (top)
+  const FRET_MARKERS  = [3, 5, 7, 9, 12];
+
+  const PAD_LEFT  = 86;
+  const PAD_RIGHT = 20;
+  const PAD_TOP   = 38;
+  const PAD_BOT   = 22;
+  const FRET_W    = 62;
+  const STRING_H  = 38;
+
+  const W = PAD_LEFT + FRETS * FRET_W + PAD_RIGHT;
+  const H = PAD_TOP  + (STRINGS - 1) * STRING_H + PAD_BOT;
+
+  function fretX(fret) { return PAD_LEFT + fret * FRET_W; }
+  function stringY(str) { return PAD_TOP  + (str - 1) * STRING_H; }
+  function stringThickness(str) { return 0.7 + (str - 1) * 0.5; }
+
+  function renderFretboard() {
+    // Build position map: key = "string-fret" → [{pos, arpegio}, ...]
+    const posMap = new Map();
+    for (const a of arpegios) {
+      for (const pos of getArpeggio(a.root, a.type)) {
+        const key = `${pos.string}-${pos.fret}`;
+        if (!posMap.has(key)) posMap.set(key, []);
+        posMap.get(key).push({ pos, arpegio: a });
+      }
+    }
+
+    const svg = document.getElementById('fretboard');
+    svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+    svg.removeAttribute('width');
+    svg.removeAttribute('height');
+    svg.innerHTML = '';
+
+    const ns = 'http://www.w3.org/2000/svg';
+    function el(tag, attrs, text) {
+      const e = document.createElementNS(ns, tag);
+      for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v);
+      if (text !== undefined) e.textContent = text;
+      return e;
+    }
+
+    // Defs
+    const defs = document.createElementNS(ns, 'defs');
+    defs.innerHTML = `
+      <filter id="ds" x="-30%" y="-30%" width="160%" height="160%">
+        <feDropShadow dx="0" dy="1.5" stdDeviation="2.5"
+          flood-color="#000" flood-opacity="0.5"/>
+      </filter>`;
+    svg.appendChild(defs);
+
+    // Background
+    svg.appendChild(el('rect', { x:0, y:0, width:W, height:H, fill:'#0d0d0d' }));
+
+    // Fretboard body
+    const boardTop = PAD_TOP - 8;
+    const boardH   = (STRINGS - 1) * STRING_H + 16;
+    svg.appendChild(el('rect', {
+      x: PAD_LEFT, y: boardTop,
+      width: FRETS * FRET_W, height: boardH,
+      fill: '#141414', rx: 2
+    }));
+
+    // Position markers
+    const midY = PAD_TOP + (STRINGS - 1) * STRING_H / 2;
+    for (const m of FRET_MARKERS) {
+      const cx = fretX(m) - FRET_W / 2;
+      if (m === 12) {
+        svg.appendChild(el('circle', { cx, cy: midY - STRING_H, r:5.5, fill:'#2a2a2a' }));
+        svg.appendChild(el('circle', { cx, cy: midY + STRING_H, r:5.5, fill:'#2a2a2a' }));
+      } else {
+        svg.appendChild(el('circle', { cx, cy: midY, r:5.5, fill:'#2a2a2a' }));
+      }
+    }
+
+    // Fret lines
+    for (let f = 1; f <= FRETS; f++) {
+      svg.appendChild(el('line', {
+        x1: fretX(f), y1: boardTop, x2: fretX(f), y2: boardTop + boardH,
+        stroke: '#3c3c3c', 'stroke-width': 1.3
+      }));
+    }
+
+    // Nut
+    svg.appendChild(el('rect', {
+      x: PAD_LEFT - 4, y: boardTop, width: 7, height: boardH,
+      fill: '#c09a60', rx: 1
+    }));
+
+    // String lines
+    for (let s = 1; s <= STRINGS; s++) {
+      const y = stringY(s);
+      svg.appendChild(el('line', {
+        x1: 32, y1: y, x2: PAD_LEFT + FRETS * FRET_W, y2: y,
+        stroke: '#b0b0b0', 'stroke-width': stringThickness(s),
+        'stroke-linecap': 'round'
+      }));
+      svg.appendChild(el('text', {
+        x: 17, y: y + 4,
+        fill: '#606060', 'font-size': 12, 'text-anchor': 'middle',
+        'font-family': 'monospace', 'font-weight': 'bold'
+      }, STRING_LABELS[s - 1]));
+    }
+
+    // Fret numbers
+    for (let f = 1; f <= FRETS; f++) {
+      svg.appendChild(el('text', {
+        x: fretX(f) - FRET_W / 2, y: PAD_TOP - 14,
+        fill: '#505050', 'font-size': 11, 'text-anchor': 'middle',
+        'font-family': 'monospace'
+      }, f));
+    }
+
+    // Note dots — one per unique position (fret 0 = open strings, not drawn)
+    for (const entries of posMap.values()) {
+      const first  = entries[0];
+      const second = entries[1];
+
+      if (first.pos.fret === 0) continue;
+
+      const cx = fretX(first.pos.fret) - FRET_W / 2;
+      const cy = stringY(first.pos.string);
+
+      // Is this interval a characteristic note of its mode?
+      const characteristic = MODE_CHARACTERISTIC[first.arpegio.type] ?? [];
+      const isChar = characteristic.includes(first.pos.interval);
+      const r = isChar ? 16 : 13;
+
+      // Second arpeggio border ring (outermost)
+      if (second) {
+        svg.appendChild(el('circle', {
+          cx, cy, r: r + (isChar ? 7 : 3.5),
+          fill: 'none', stroke: second.arpegio.color,
+          'stroke-width': 2.5, opacity: 0.9
+        }));
+      }
+
+      // Gold ring for characteristic note
+      if (isChar) {
+        svg.appendChild(el('circle', {
+          cx, cy, r: r + 3,
+          fill: 'none', stroke: '#f0c040',
+          'stroke-width': 2.2, opacity: 0.9
+        }));
+      }
+
+      // Main dot
+      svg.appendChild(el('circle', {
+        cx, cy, r,
+        fill: first.arpegio.color,
+        filter: 'url(#ds)',
+        opacity: 0.97
+      }));
+
+      // Interval label
+      const textFill = luminance(first.arpegio.color) > 0.5 ? '#111' : '#fff';
+      svg.appendChild(el('text', {
+        x: cx, y: cy + 4,
+        fill: textFill, 'font-size': isChar ? 10 : 9, 'text-anchor': 'middle',
+        'font-weight': 'bold', 'font-family': 'monospace'
+      }, first.pos.interval));
+    }
+  }
+
+  // ── Init ──────────────────────────────────────────────────────────────────
+  document.getElementById('add-btn').addEventListener('click', () => addArpegio());
+  addArpegio('C', 'maj'); // primer arpegio por defecto
+</script>
+</body>
+</html>

@@ -1,0 +1,23 @@
+{
+  "name": "guitar-arpeggio",
+  "version": "0.1.0",
+  "description": "Pure-data representation of full guitar arpeggios across the fretboard",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "guitar",
+    "arpeggio",
+    "music-theory",
+    "fretboard"
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^26.0.1",
+    "typescript": "^6.0.3"
+  }
+}
