@@ -60,40 +60,66 @@
         inset 0 1px 0 rgba(255,255,255,0.35);
       padding: 20px 32px 24px;
       margin-bottom: 36px;
+      display: flex;
+      gap: 32px;
+      align-items: flex-start;
+    }
+
+    /* ── Left column: progression list ── */
+    .controls-left {
+      flex: 0 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      min-width: 300px;
+    }
+
+    /* ── Right column: suggestions ── */
+    .controls-right {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    /* Column headers + rows share the same grid */
+    .progression-header,
+    .arpeggio-row {
+      display: grid;
+      grid-template-columns: 20px 68px 1fr 24px;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .progression-header {
+      padding-bottom: 6px;
+      border-bottom: 1px solid rgba(0,0,0,0.18);
+      margin-bottom: 2px;
+    }
+
+    .ph-label {
+      font-family: 'Oswald', sans-serif;
+      font-size: 0.58rem;
+      font-weight: 700;
+      color: #444;
+      text-transform: uppercase;
+      letter-spacing: 2px;
     }
 
     #arpeggio-list {
       display: flex;
       flex-direction: column;
-      gap: 10px;
-      margin-bottom: 16px;
-    }
-
-    .arpeggio-row {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      flex-wrap: wrap;
+      gap: 6px;
     }
 
     .color-swatch {
-      width: 20px;
-      height: 20px;
+      width: 14px;
+      height: 14px;
       border-radius: 50%;
       flex-shrink: 0;
+      justify-self: center;
       box-shadow: 0 1px 4px rgba(0,0,0,0.5), inset 0 -1px 1px rgba(0,0,0,0.3);
-    }
-
-    .row-label {
-      font-family: 'Oswald', sans-serif;
-      font-size: 0.65rem;
-      font-weight: 700;
-      color: #2a2a2a;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
     }
 
     select {
@@ -101,31 +127,32 @@
       color: #f0c040;
       border: 1px solid #555;
       border-radius: 3px;
-      padding: 7px 14px;
+      padding: 5px 8px;
       font-family: 'Oswald', sans-serif;
-      font-size: 0.95rem;
+      font-size: 0.88rem;
       font-weight: 600;
-      letter-spacing: 1.5px;
+      letter-spacing: 1px;
       cursor: pointer;
       outline: none;
       box-shadow: inset 0 2px 5px rgba(0,0,0,0.65), 0 1px 0 rgba(255,255,255,0.18);
       text-transform: uppercase;
+      width: 100%;
     }
 
     select:focus { border-color: #f0c040; }
 
     .remove-btn {
       background: transparent;
-      color: #666;
-      border: 1px solid #888;
+      color: #777;
+      border: 1px solid #999;
       border-radius: 3px;
-      width: 28px;
-      height: 28px;
-      font-size: 1rem;
+      width: 24px;
+      height: 24px;
+      font-size: 0.9rem;
       line-height: 1;
       cursor: pointer;
-      flex-shrink: 0;
       transition: color 0.15s, border-color 0.15s;
+      justify-self: center;
     }
     .remove-btn:hover { color: #c0392b; border-color: #c0392b; }
 
@@ -143,8 +170,93 @@
       cursor: pointer;
       box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);
       transition: border-color 0.15s;
+      margin-top: 4px;
+      align-self: flex-start;
     }
     .add-btn:hover { border-color: #f0c040; }
+
+    .suggest-btn {
+      background: #1a1a1a;
+      color: #a0c8ff;
+      border: 1px solid rgba(100,160,255,0.4);
+      border-radius: 3px;
+      padding: 7px 20px;
+      font-family: 'Oswald', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      cursor: pointer;
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);
+      transition: color 0.15s, border-color 0.15s;
+      width: 100%;
+    }
+    .suggest-btn:hover:not(:disabled) { color: #cce0ff; border-color: #a0c8ff; }
+    .suggest-btn:disabled { opacity: 0.4; cursor: default; }
+
+    .suggestions-area {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .suggestion-chip {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      background: #111;
+      border: 1px solid #333;
+      border-radius: 4px;
+      padding: 10px 14px;
+      cursor: pointer;
+      transition: border-color 0.15s;
+    }
+    .suggestion-chip:hover { border-color: #f0c040; }
+
+    .suggestion-chip--featured {
+      border-color: #f0c040;
+      box-shadow: 0 0 0 1px rgba(240,192,64,0.25), inset 0 0 12px rgba(240,192,64,0.04);
+    }
+    .suggestion-chip--featured .suggestion-label::before {
+      content: '★ ';
+      color: #f0c040;
+    }
+
+    .suggestion-chip--closing {
+      border-color: #5a8a6a;
+      box-shadow: 0 0 0 1px rgba(90,138,106,0.25);
+    }
+    .closing-badge {
+      font-family: 'Oswald', sans-serif;
+      font-size: 0.6rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      color: #5a8a6a;
+      border: 1px solid #5a8a6a;
+      border-radius: 2px;
+      padding: 1px 5px;
+      white-space: nowrap;
+      align-self: center;
+      flex-shrink: 0;
+    }
+
+    .suggestion-label {
+      font-family: 'Oswald', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #f0c040;
+      letter-spacing: 1.5px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .suggestion-reason {
+      font-family: 'Oswald', sans-serif;
+      font-size: 0.75rem;
+      color: #777;
+      letter-spacing: 0.5px;
+      line-height: 1.4;
+    }
 
     /* ── Fretboard cabinet ── */
     .fretboard-outer {
@@ -235,8 +347,24 @@
 <h1>Guitar Arpeggio</h1>
 
 <div class="controls-panel">
-  <div id="arpeggio-list"></div>
-  <button class="add-btn" id="add-btn">+ Agregar arpegio</button>
+  <div class="controls-left">
+    <div class="progression-header">
+      <div></div>
+      <div class="ph-label">Raíz</div>
+      <div class="ph-label">Patrón</div>
+      <div></div>
+    </div>
+    <div id="arpeggio-list"></div>
+    <button class="add-btn" id="add-btn">+ Agregar arpegio</button>
+  </div>
+  <div class="controls-right">
+    <div class="progression-header" style="visibility:hidden" aria-hidden="true"></div>
+    <input id="groq-key-input" type="password" placeholder="Groq API Key (gsk_...)"
+      style="width:100%;padding:6px 8px;margin-bottom:8px;background:#1a1a2e;border:1px solid #444;border-radius:6px;color:#e0e0e0;font-size:12px;box-sizing:border-box;"
+      autocomplete="off" />
+    <button class="suggest-btn" id="suggest-btn">&#x2728; Sugerir siguiente</button>
+    <div class="suggestions-area" id="suggestions-area"></div>
+  </div>
 </div>
 
 <div class="fretboard-outer">
@@ -252,6 +380,10 @@
 <div class="legend" id="legend"></div>
 
 <script>
+  // ── Config ───────────────────────────────────────────────────────────────
+  // Set your Groq API key here or via the input field in the UI.
+  const GROQ_API_KEY = '';
+
   // ── Music theory ──────────────────────────────────────────────────────────
   const CHROMATIC = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
 
@@ -270,6 +402,9 @@
     dom7b9:  [0, 4, 7, 10, 1],
     dom7s9:  [0, 4, 7, 10, 3],
     dom7s11: [0, 4, 7, 10, 6],
+    // Pentatónicas
+    pent_maj:   [0, 2, 4, 7, 9],
+    pent_min:   [0, 3, 5, 7, 10],
     // Modos griegos (7 notas)
     ionian:     [0, 2, 4, 5, 7, 9, 11],
     dorian:     [0, 2, 3, 5, 7, 9, 10],
@@ -281,6 +416,8 @@
   };
 
   const INTERVAL_NAMES = {
+    pent_maj: { 0:'1', 2:'2', 4:'3', 7:'5', 9:'6' },
+    pent_min: { 0:'1', 3:'b3', 5:'4', 7:'5', 10:'b7' },
     maj:     { 0:'T', 4:'3M', 7:'5J' },
     min:     { 0:'T', 3:'3m', 7:'5J' },
     maj7:    { 0:'T', 4:'3M', 7:'5J', 11:'7M' },
@@ -317,12 +454,13 @@
   };
 
   const INTERVAL_ORDER = [
-    'T','3m','3M','5d','5J','7d','7m','7M','b9','9','#9','#11',
+    'T','3m','3M','5d','5J','7d','7m','7M','b9','9','#9','11','#11','13',
     '1','b2','2','b3','3','4','#4','b5','5','b6','6','b7','7',
   ];
 
   const INTERVAL_ES = {
     'T':'Tónica','3m':'Tercera menor','3M':'Tercera mayor',
+    '1':'Tónica','2':'Segunda','3':'Tercera mayor','4':'Cuarta justa','5':'Quinta justa','6':'Sexta mayor',
     '5d':'Quinta disminuida','5J':'Quinta justa',
     '7d':'Séptima disminuida','7m':'Séptima menor','7M':'Séptima mayor',
     'b9':'Novena bemol','9':'Novena','#9':'Novena aumentada','#11':'Oncena aumentada',
@@ -335,6 +473,7 @@
   };
 
   const TYPE_LABELS = {
+    pent_maj:'Pentatónica Mayor', pent_min:'Pentatónica Menor',
     maj:'Major', min:'Minor', maj7:'Maj 7', min7:'Min 7',
     dom7:'Dom 7', dim:'Dim', dim7:'Dim 7', m7b5:'m7b5 (ø)',
     maj9:'Maj 9', min9:'Min 9',
@@ -354,6 +493,10 @@
       {value:'maj9',label:'Maj 9'},{value:'min9',label:'Min 9'},
       {value:'dom9',label:'Dom 9'},{value:'dom7b9',label:'Dom 7b9'},
       {value:'dom7s9',label:'Dom 7#9'},{value:'dom7s11',label:'Dom 7#11'},
+    ]},
+    { group: 'Pentatónicas', options: [
+      {value:'pent_maj',label:'Pentatónica Mayor'},
+      {value:'pent_min',label:'Pentatónica Menor'},
     ]},
     { group: 'Modos', options: [
       {value:'ionian',label:'Jónico (Mayor)'},
@@ -393,7 +536,8 @@
   const OPEN_STRINGS = ['E','A','D','G','B','E']; // index 0 = 6th string (low E)
 
   function getArpeggio(root, type, maxFret = 12) {
-    const intervalMap  = INTERVAL_NAMES[type];
+    if (!CHORD_INTERVALS[type]) return [];
+    const intervalMap  = INTERVAL_NAMES[type] ?? {};
     const rootIdx      = noteToIndex(root);
     const chordSet     = new Set(
       CHORD_INTERVALS[type].map(i => ((rootIdx + i) % 12 + 12) % 12)
@@ -473,31 +617,20 @@
       swatch.className = 'color-swatch';
       swatch.style.background = a.color;
 
-      const rootLabel = document.createElement('label');
-      rootLabel.className = 'row-label';
-      rootLabel.textContent = 'Raíz';
       const rootSel = makeSelect(NOTES, a.root, 'root-sel');
       rootSel.addEventListener('change', () => updateArpegio(a.id, 'root', rootSel.value));
-      rootLabel.appendChild(rootSel);
 
-      const typeLabel = document.createElement('label');
-      typeLabel.className = 'row-label';
-      typeLabel.textContent = 'Acorde';
       const typeSel = makeSelect(CHORD_TYPE_OPTIONS, a.type, 'type-sel');
       typeSel.addEventListener('change', () => updateArpegio(a.id, 'type', typeSel.value));
-      typeLabel.appendChild(typeSel);
 
-      row.append(swatch, rootLabel, typeLabel);
+      const removeBtn = document.createElement('button');
+      removeBtn.className = 'remove-btn';
+      removeBtn.textContent = '×';
+      removeBtn.title = 'Quitar arpegio';
+      removeBtn.style.visibility = multi ? 'visible' : 'hidden';
+      removeBtn.addEventListener('click', () => removeArpegio(a.id));
 
-      if (multi) {
-        const removeBtn = document.createElement('button');
-        removeBtn.className = 'remove-btn';
-        removeBtn.textContent = '×';
-        removeBtn.title = 'Quitar arpegio';
-        removeBtn.addEventListener('click', () => removeArpegio(a.id));
-        row.appendChild(removeBtn);
-      }
-
+      row.append(swatch, rootSel, typeSel, removeBtn);
       list.appendChild(row);
     }
   }
@@ -648,6 +781,7 @@
     }
 
     // Note dots — one per unique position (fret 0 = open strings, not drawn)
+    const dotOpacity = previewPhrase ? 0.18 : 0.97;
     for (const entries of posMap.values()) {
       const first  = entries[0];
       const second = entries[1];
@@ -657,49 +791,260 @@
       const cx = fretX(first.pos.fret) - FRET_W / 2;
       const cy = stringY(first.pos.string);
 
-      // Is this interval a characteristic note of its mode?
       const characteristic = MODE_CHARACTERISTIC[first.arpegio.type] ?? [];
       const isChar = characteristic.includes(first.pos.interval);
       const r = isChar ? 16 : 13;
 
-      // Second arpeggio border ring (outermost)
       if (second) {
         svg.appendChild(el('circle', {
           cx, cy, r: r + (isChar ? 7 : 3.5),
           fill: 'none', stroke: second.arpegio.color,
-          'stroke-width': 2.5, opacity: 0.9
+          'stroke-width': 2.5, opacity: dotOpacity
         }));
       }
-
-      // Gold ring for characteristic note
       if (isChar) {
         svg.appendChild(el('circle', {
           cx, cy, r: r + 3,
           fill: 'none', stroke: '#f0c040',
-          'stroke-width': 2.2, opacity: 0.9
+          'stroke-width': 2.2, opacity: dotOpacity
         }));
       }
-
-      // Main dot
       svg.appendChild(el('circle', {
         cx, cy, r,
         fill: first.arpegio.color,
         filter: 'url(#ds)',
-        opacity: 0.97
+        opacity: dotOpacity
       }));
-
-      // Interval label
+      const bestLabel = entries.reduce((best, e) => {
+        const bi = INTERVAL_ORDER.indexOf(best.pos.interval);
+        const ei = INTERVAL_ORDER.indexOf(e.pos.interval);
+        return ei > bi ? e : best;
+      }, entries[0]).pos.interval;
       const textFill = luminance(first.arpegio.color) > 0.5 ? '#111' : '#fff';
       svg.appendChild(el('text', {
         x: cx, y: cy + 4,
         fill: textFill, 'font-size': isChar ? 10 : 9, 'text-anchor': 'middle',
-        'font-weight': 'bold', 'font-family': 'monospace'
-      }, first.pos.interval));
+        'font-weight': 'bold', 'font-family': 'monospace', opacity: dotOpacity
+      }, bestLabel));
+    }
+
+    // Phrase preview overlay
+    if (previewPhrase) {
+      for (const p of previewPhrase) {
+        if (p.fret === 0) continue;
+        const cx = fretX(p.fret) - FRET_W / 2;
+        const cy = stringY(p.string);
+        svg.appendChild(el('circle', { cx, cy, r: 14, fill: '#1a3a5a', filter: 'url(#ds)', opacity: 0.95 }));
+        svg.appendChild(el('circle', { cx, cy, r: 14, fill: 'none', stroke: '#a0c8ff', 'stroke-width': 1.8, opacity: 0.9 }));
+        svg.appendChild(el('text', {
+          x: cx, y: cy + 4,
+          fill: '#a0c8ff', 'font-size': 10, 'text-anchor': 'middle',
+          'font-weight': 'bold', 'font-family': 'monospace'
+        }, p.seqNum));
+      }
+    }
+
+    // Avoid note markers (shown only when suggestion panel is open)
+    if (avoidNotes.length > 0) {
+      const avoidSet = new Set(avoidNotes.map(n => NOTE_ALIASES[n] ?? n));
+      for (let s = 0; s < OPEN_STRINGS.length; s++) {
+        for (let fret = 1; fret <= FRETS; fret++) {
+          const note = transpose(OPEN_STRINGS[s], fret);
+          if (!avoidSet.has(note)) continue;
+          // Skip positions already occupied by an active pattern dot
+          const key = `${6 - s}-${fret}`;
+          if (posMap.has(key)) continue;
+          const cx = fretX(fret) - FRET_W / 2;
+          const cy = stringY(6 - s);
+          svg.appendChild(el('line', {
+            x1: cx - 6, y1: cy - 6, x2: cx + 6, y2: cy + 6,
+            stroke: '#c0392b', 'stroke-width': 2, 'stroke-linecap': 'round', opacity: 0.7,
+          }));
+          svg.appendChild(el('line', {
+            x1: cx + 6, y1: cy - 6, x2: cx - 6, y2: cy + 6,
+            stroke: '#c0392b', 'stroke-width': 2, 'stroke-linecap': 'round', opacity: 0.7,
+          }));
+        }
+      }
+    }
+  }
+
+  // ── Phrase preview ───────────────────────────────────────────────────────
+  let previewPhrase = null; // array of {string, fret, note, seqNum} | null
+
+  const OPEN_PITCH_OFFSETS = [0, 5, 10, 15, 19, 24]; // semitones from low E, string 6→1
+  function absPitch(pos) { return OPEN_PITCH_OFFSETS[6 - pos.string] + pos.fret; }
+
+  function findPhraseBox(root, type) {
+    const all = getArpeggio(root, type, 12);
+    const pool = all.filter(p => p.fret > 0);
+    if (pool.length === 0) return [];
+
+    // Find 5-fret window containing the most positions
+    let best = [];
+    for (let start = 1; start <= 8; start++) {
+      const inWin = pool.filter(p => p.fret >= start && p.fret <= start + 4);
+      if (inWin.length > best.length) best = inWin;
+    }
+
+    // Sort ascending by pitch, deduplicate by pitch (keep first occurrence per pitch)
+    best.sort((a, b) => absPitch(a) - absPitch(b));
+    const seen = new Set();
+    const unique = best.filter(p => {
+      const k = absPitch(p);
+      if (seen.has(k)) return false;
+      seen.add(k);
+      return true;
+    });
+
+    return unique.map((p, i) => ({ ...p, seqNum: i + 1 }));
+  }
+
+  // ── AI Suggestions ───────────────────────────────────────────────────────
+  let avoidNotes = []; // active while suggestion panel is open
+
+  function buildPrompt() {
+    const list = arpegios.map(a => `${a.root} ${TYPE_LABELS[a.type]}`).join(' → ');
+    return `You are a music theory assistant for guitar with deep knowledge of harmony, modes, and extended chords.
+
+The user is building this chord/scale progression: ${list}
+
+Analyze the full progression to determine its tonal center and key. Then:
+1. Suggest 3 or 4 patterns that would musically follow the ENTIRE progression (not just the last chord). Order them from strongest to weakest musical fit — the first two are the top recommendations.
+2. List the notes outside the inferred key as "avoid notes" for improvisation.
+
+CRITICAL RULES for suggestions:
+- Use the FULL range of available types — do NOT default to only maj/min. Pick the type that best serves the musical context.
+- Extended chords (dom7, maj7, min7, dom9, maj9, etc.) add color and tension — prefer them when the progression calls for it.
+- Modes (dorian, phrygian, lydian, mixolydian, aeolian, locrian) are valid suggestions, especially if the progression already has modal color.
+- Pentatonic scales (pent_maj, pent_min) work well after a sequence of arpeggios to add a melodic/scale contrast.
+- Diminished (dim, dim7) and half-diminished (m7b5) chords create tension that resolves beautifully — use them when appropriate.
+- Vary the types across suggestions — don't suggest 3 things of the same type.
+
+Return ONLY a valid JSON object — no markdown, no explanation outside the JSON.
+
+{
+  "tonal_center": "e.g. C major or A minor",
+  "avoid_notes": ["note names outside the key, e.g. F#, Bb"],
+  "suggestions": [
+    {
+      "root": "one of C C# D D# E F F# G G# A A# B",
+      "type": "one of maj min maj7 min7 dom7 dim dim7 m7b5 maj9 min9 dom9 dom7b9 dom7s9 dom7s11 pent_maj pent_min ionian dorian phrygian lydian mixolydian aeolian locrian",
+      "reason": "one short sentence in Spanish explaining why this specific type fits the full progression",
+      "is_closing": false
+    }
+  ]
+}
+
+IMPORTANT: If the progression already has enough harmonic motion and one of your suggestions would naturally close/resolve it (e.g. a tonic chord, a final cadence, or a resolving mode), set "is_closing": true on that suggestion. Only mark ONE suggestion as closing, and only when it genuinely makes musical sense. If the progression is too short or unresolved, do not mark any as closing.
+
+Example showing variety and a closing suggestion:
+{"tonal_center":"C major","avoid_notes":["F#","Bb"],"suggestions":[{"root":"A","type":"min7","reason":"Sexto grado con séptima, añade color jazzístico.","is_closing":false},{"root":"F","type":"maj7","reason":"Cuarto grado mayor séptima, movimiento subdominante.","is_closing":false},{"root":"G","type":"dom7","reason":"Dominante que genera tensión hacia la tónica.","is_closing":false},{"root":"C","type":"maj","reason":"Resolución a la tónica, cierre natural de la progresión.","is_closing":true}]}`;
+  }
+
+  function renderSuggestions(suggestions) {
+    const area = document.getElementById('suggestions-area');
+    area.innerHTML = '';
+    const valid = suggestions.filter(s => CHORD_INTERVALS[s.type] !== undefined);
+    for (const [i, s] of valid.entries()) {
+      const isClosing = !!s.is_closing;
+      const chip = document.createElement('div');
+      chip.className = 'suggestion-chip'
+        + (i < 2 && !isClosing ? ' suggestion-chip--featured' : '')
+        + (isClosing ? ' suggestion-chip--closing' : '');
+      chip.title = s.reason;
+
+      const label = document.createElement('div');
+      label.className = 'suggestion-label';
+      label.textContent = `${s.root} ${TYPE_LABELS[s.type] ?? s.type}`;
+
+      const reason = document.createElement('div');
+      reason.className = 'suggestion-reason';
+      reason.textContent = s.reason;
+
+      if (isClosing) {
+        const badge = document.createElement('div');
+        badge.className = 'closing-badge';
+        badge.textContent = 'CIERRE';
+        chip.append(label, badge, reason);
+      } else {
+        chip.append(label, reason);
+      }
+      chip.addEventListener('mouseenter', () => {
+        previewPhrase = findPhraseBox(s.root, s.type);
+        renderFretboard();
+      });
+      chip.addEventListener('mouseleave', () => {
+        previewPhrase = null;
+        renderFretboard();
+      });
+      chip.addEventListener('click', () => {
+        previewPhrase = null;
+        addArpegio(s.root, s.type);
+        area.innerHTML = '';
+        renderFretboard();
+      });
+      area.appendChild(chip);
+    }
+  }
+
+  async function suggestNext() {
+    const keyInput = document.getElementById('groq-key-input');
+    const activeKey = (keyInput && keyInput.value.trim()) || GROQ_API_KEY;
+    if (!activeKey || activeKey === 'YOUR_GROQ_KEY_HERE') {
+      alert('Ingresá tu Groq API Key en el campo de texto para usar las sugerencias.');
+      return;
+    }
+    const btn = document.getElementById('suggest-btn');
+    btn.disabled = true;
+    btn.textContent = 'Consultando...';
+    document.getElementById('suggestions-area').innerHTML = '';
+    avoidNotes = [];
+    renderFretboard();
+
+    try {
+      const res = await fetch(
+        'https://api.groq.com/openai/v1/chat/completions',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${activeKey}`,
+          },
+          body: JSON.stringify({
+            model: 'llama-3.3-70b-versatile',
+            temperature: 0.7,
+            max_tokens: 700,
+            messages: [{ role: 'user', content: buildPrompt() }],
+          }),
+        }
+      );
+      const data = await res.json();
+
+      if (data.error) {
+        throw new Error(`API error: ${data.error.message}`);
+      }
+
+      const text = data?.choices?.[0]?.message?.content ?? '';
+      const match = text.match(/\{[\s\S]*\}/);
+      if (!match) throw new Error(`Respuesta inesperada: ${text.slice(0, 200)}`);
+      const result = JSON.parse(match[0]);
+
+      avoidNotes = (result.avoid_notes ?? []).map(n => NOTE_ALIASES[n] ?? n);
+      renderFretboard();
+      renderSuggestions(result.suggestions ?? []);
+    } catch (e) {
+      document.getElementById('suggestions-area').textContent = `Error: ${e.message}`;
+      console.error(e);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '✨ Sugerir siguiente';
     }
   }
 
   // ── Init ──────────────────────────────────────────────────────────────────
   document.getElementById('add-btn').addEventListener('click', () => addArpegio());
+  document.getElementById('suggest-btn').addEventListener('click', suggestNext);
   addArpegio('C', 'maj'); // primer arpegio por defecto
 </script>
 </body>

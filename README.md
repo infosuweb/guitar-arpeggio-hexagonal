@@ -54,3 +54,13 @@ npm install
 npx tsc --noEmit   # typecheck (strict)
 npx tsx src/index.ts   # run the demo
 ```
+
+## Web UI
+
+Abre el diapasón interactivo en el navegador con un servidor HTTP local:
+
+```bash
+python3 -m http.server 3456
+```
+
+Luego visita **http://localhost:3456**

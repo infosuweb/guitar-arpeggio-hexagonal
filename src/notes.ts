@@ -23,7 +23,7 @@ export const CHROMATIC = [
 export type Note = (typeof CHROMATIC)[number];
 
 /** Supported chord qualities. */
-export type ChordType = 'maj' | 'min' | 'maj7' | 'min7' | 'dom7' | 'dim';
+export type ChordType = 'maj' | 'min' | 'maj7' | 'min7' | 'dom7' | 'dim' | 'pent_maj' | 'pent_min';
 
 /**
  * Semitone intervals (from the root) that define each chord quality.
@@ -36,6 +36,8 @@ const CHORD_INTERVALS: Record<ChordType, readonly number[]> = {
   min7: [0, 3, 7, 10],
   dom7: [0, 4, 7, 10],
   dim: [0, 3, 6],
+  pent_maj: [0, 2, 4, 7, 9],
+  pent_min: [0, 3, 5, 7, 10],
 };
 
 /** Map of accepted aliases (including flats) to canonical sharp names. */
